@@ -60,6 +60,43 @@ Item {
     }
 
     //-------------------------------------------------------------------------
+    //-- My button
+    Rectangle {
+        id:                         buttonHell
+        width:                      ScreenTools.defaultFontPixelHeight * 1.5
+        height:                     ScreenTools.defaultFontPixelHeight * 1.5
+        radius:                     2
+        anchors.bottom:             parent.bottom
+        anchors.bottomMargin:       ScreenTools.defaultFontPixelHeight * 1.5
+        anchors.left:               parent.left
+        anchors.leftMargin:         ScreenTools.defaultFontPixelHeight * 1.5
+        Button {
+            text:                   qsTr("Hell")
+            anchors.centerIn:       parent
+            onClicked:              messageHell.open()
+        }
+        Dialog {
+            id:                     messageHell
+            x:                      256
+            y:                      -512
+            title:                  qsTr("Stupid dialog box")
+            contentItem: Rectangle {
+                implicitWidth:          256
+                implicitHeight:         128
+                Text {
+                    text:               qsTr("HELL o'World!")
+                    anchors.centerIn:   parent
+                }
+            }
+            Button {
+                anchors.bottom:         parent.bottom
+                text:                   qsTr("it's fine")
+                onClicked:              messageHell.close()
+            }
+        }
+    }
+
+    //-------------------------------------------------------------------------
     //-- Heading Indicator
     Rectangle {
         id:                         compassBar

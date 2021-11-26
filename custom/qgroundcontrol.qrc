@@ -76,6 +76,7 @@
 		<file alias="QGCInstrumentWidgetAlternate.qml">../src/FlightMap/Widgets/QGCInstrumentWidgetAlternate.qml</file>
 		<file alias="QGroundControl/Controls/AnalyzePage.qml">../src/AnalyzeView/AnalyzePage.qml</file>
 		<file alias="QGroundControl/Controls/AppMessages.qml">../src/QmlControls/AppMessages.qml</file>
+		<file alias="QGroundControl/Controls/AltModeDialog.qml">../src/QmlControls/AltModeDialog.qml</file>
 		<file alias="QGroundControl/Controls/AxisMonitor.qml">../src/QmlControls/AxisMonitor.qml</file>
 		<file alias="QGroundControl/Controls/CameraCalcCamera.qml">../src/PlanView/CameraCalcCamera.qml</file>
 		<file alias="QGroundControl/Controls/CameraCalcGrid.qml">../src/PlanView/CameraCalcGrid.qml</file>
@@ -180,6 +181,7 @@
 		<file alias="QGroundControl/Controls/TakeoffItemMapVisual.qml">../src/PlanView/TakeoffItemMapVisual.qml</file>
 		<file alias="QGroundControl/Controls/ToolStrip.qml">../src/QmlControls/ToolStrip.qml</file>
 		<file alias="QGroundControl/Controls/ToolStripHoverButton.qml">../src/QmlControls/ToolStripHoverButton.qml</file>
+		<file alias="QGroundControl/Controls/TransectStyleComplexItemEditor.qml">../src/PlanView/TransectStyleComplexItemEditor.qml</file>
 		<file alias="QGroundControl/Controls/TransectStyleComplexItemStats.qml">../src/PlanView/TransectStyleComplexItemStats.qml</file>
 		<file alias="QGroundControl/Controls/TransectStyleComplexItemTabBar.qml">../src/PlanView/TransectStyleComplexItemTabBar.qml</file>
 		<file alias="QGroundControl/Controls/TransectStyleComplexItemTerrainFollow.qml">../src/PlanView/TransectStyleComplexItemTerrainFollow.qml</file>
@@ -231,6 +233,9 @@
 		<file alias="QGroundControl/FlightDisplay/TerrainProgress.qml">../src/FlightDisplay/TerrainProgress.qml</file>
 		<file alias="QGroundControl/FlightDisplay/TelemetryValuesBar.qml">../src/FlightDisplay/TelemetryValuesBar.qml</file>
 		<file alias="QGroundControl/FlightDisplay/VehicleWarnings.qml">../src/FlightDisplay/VehicleWarnings.qml</file>
+		<file alias="QGroundControl/FlightDisplay/ObstacleDistanceOverlay.qml">../src/FlightDisplay/ObstacleDistanceOverlay.qml</file>
+		<file alias="QGroundControl/FlightDisplay/ObstacleDistanceOverlayMap.qml">../src/FlightDisplay/ObstacleDistanceOverlayMap.qml</file>
+		<file alias="QGroundControl/FlightDisplay/ObstacleDistanceOverlayVideo.qml">../src/FlightDisplay/ObstacleDistanceOverlayVideo.qml</file>
 		<file alias="QGroundControl/FlightDisplay/qmldir">../src/QmlControls/QGroundControl/FlightDisplay/qmldir</file>
 		<file alias="QGroundControl/FlightMap/CameraTriggerIndicator.qml">../src/FlightMap/MapItems/CameraTriggerIndicator.qml</file>
 		<file alias="QGroundControl/FlightMap/CenterMapDropButton.qml">../src/FlightMap/Widgets/CenterMapDropButton.qml</file>
@@ -323,6 +328,8 @@
 		<file alias="Vehicle/GPSFact.json">../src/Vehicle/GPSFact.json</file>
 		<file alias="Vehicle/GPSRTKFact.json">../src/Vehicle/GPSRTKFact.json</file>
 		<file alias="Vehicle/SetpointFact.json">../src/Vehicle/SetpointFact.json</file>
+		<file alias="Vehicle/LocalPositionFact.json">../src/Vehicle/LocalPositionFact.json</file>
+		<file alias="Vehicle/LocalPositionSetpointFact.json">../src/Vehicle/LocalPositionFact.json</file>
 		<file alias="Vehicle/SubmarineFact.json">../src/Vehicle/SubmarineFact.json</file>
 		<file alias="Vehicle/TemperatureFact.json">../src/Vehicle/TemperatureFact.json</file>
 		<file alias="Vehicle/TerrainFactGroup.json">../src/Vehicle/TerrainFactGroup.json</file>
@@ -336,8 +343,8 @@
 		<file alias="APMArduSubMockLink.params">../src/comm/APMArduSubMockLink.params</file>
 		<file alias="PX4MockLink.params">../src/comm/PX4MockLink.params</file>
 		<file alias="General.MetaData.json">../src/comm/MockLink.General.MetaData.json</file>
-		<file alias="General.MetaData.json.xz">src/comm/MockLink.General.MetaData.json.xz</file>
+		<file alias="General.MetaData.json.xz">../src/comm/MockLink.General.MetaData.json.xz</file>
+		<file alias="Parameter.MetaData.json.xz">../src/comm/MockLink.Parameter.MetaData.json.xz</file>
 		<file alias="Parameter.MetaData.json">../src/comm/MockLink.Parameter.MetaData.json</file>
-		<file alias="Parameter.MetaData.json.xz">src/comm/MockLink.Parameter.MetaData.json.xz</file>
 	</qresource>
 </RCC>
