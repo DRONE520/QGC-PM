@@ -12,11 +12,15 @@
 import QtQuick          2.12
 import QtQuick.Controls 2.4
 import QtQuick.Layouts  1.11
+import QtQuick.Dialogs  1.3
 
-import QGroundControl               1.0
-import QGroundControl.Controls      1.0
-import QGroundControl.Palette       1.0
-import QGroundControl.ScreenTools   1.0
+import QGroundControl                   1.0
+import QGroundControl.FactControls      1.0
+import QGroundControl.FactSystem        1.0
+import QGroundControl.Controls          1.0
+import QGroundControl.Palette           1.0
+import QGroundControl.ScreenTools       1.0
+import QGroundControl.SettingsManager   1.0
 
 import Custom.Widgets 1.0
 
@@ -71,27 +75,35 @@ Item {
         anchors.left:               parent.left
         anchors.leftMargin:         ScreenTools.defaultFontPixelHeight * 1.5
         Button {
-            text:                   qsTr("Hell")
+            text:                   "Where"
             anchors.centerIn:       parent
             onClicked:              messageHell.open()
-        }
-        Dialog {
-            id:                     messageHell
-            x:                      256
-            y:                      -512
-            title:                  qsTr("Stupid dialog box")
-            contentItem: Rectangle {
-                implicitWidth:          256
-                implicitHeight:         128
-                Text {
-                    text:               qsTr("HELL o'World!")
-                    anchors.centerIn:   parent
+
+            MessageDialog {
+                id:                 messageHell
+                x:                      256
+                y:                      -512
+                title:              qsTr("Vehicle position")
+
+                property var rtkSettings:               QGroundControl.settingsManager.rtkSettings
+                property string _basePositionFixed:     rtkSettings.fixedBasePositionLatitude.rawValue + " / " + rtkSettings.fixedBasePositionLongitude.rawValue + " / " + rtkSettings.fixedBasePositionAltitude.rawValue
+                property string _basePositionDynamic:   QGroundControl.gpsRtk.currentLatitude.rawValue + " / " + QGroundControl.gpsRtk.currentLongitude.rawValue + " / " + QGroundControl.gpsRtk.currentAltitude.rawValue
+                property string _basePosition:          "Base position: " + _basePositionFixed //(rtkSettings.useFixedPosition ? _basePositionFixed : _basePositionDynamic)
+                property string _vehicleCoordinates:    "Coordinates: " + _activeVehicle.gps.getFact("lat").rawValue + " / " + _activeVehicle.gps.getFact("lon").rawValue + " / " + _activeVehicle.altitudeRelative.rawValue
+                function distanceToBase() {
+                    var bLat = rtkSettings.useFixedPosition ? rtkSettings.fixedBasePositionLatitude.rawValue : QGroundControl.gpsRtk.currentLatitude.rawValue;
+                    var bLon = rtkSettings.useFixedPosition ? rtkSettings.fixedBasePositionLongitude.rawValue : QGroundControl.gpsRtk.currentLongitude.rawValue;
+                    var bAlt = rtkSettings.useFixedPosition ? rtkSettings.fixedBasePositionAltitude.rawValue : QGroundControl.gpsRtk.currentAltitude.rawValue;
+                    var vLat = _activeVehicle.gps.getFact("lat").rawValue;
+                    var vLon = _activeVehicle.gps.getFact("lon").rawValue;
+                    var vAlt = _activeVehicle.altitudeRelative.rawValue;
+                    return (bLat - vLat) * (bLat - vLat) + (bLon - vLon) * (bLon - vLon) + (bAlt - vAlt) * (bAlt - vAlt);
                 }
-            }
-            Button {
-                anchors.bottom:         parent.bottom
-                text:                   qsTr("it's fine")
-                onClicked:              messageHell.close()
+                property string _distanceToBase:        "Distance to base: " + distanceToBase()
+                text:               qsTr(_basePosition + "\n" + (_activeVehicle ? _vehicleCoordinates + "\n" + _distanceToBase : "No vehicle was found!"))
+
+                standardButtons:    StandardButton.Ok
+                onAccepted:         messageHell.close()
             }
         }
     }
