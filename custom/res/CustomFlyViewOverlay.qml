@@ -81,27 +81,46 @@ Item {
 
             MessageDialog {
                 id:                 messageHell
-                x:                      256
-                y:                      -512
+                x:                  256
+                y:                  -512
                 title:              qsTr("Vehicle position")
 
                 property var rtkSettings:               QGroundControl.settingsManager.rtkSettings
-                property string _basePositionFixed:     rtkSettings.fixedBasePositionLatitude.rawValue + " / " + rtkSettings.fixedBasePositionLongitude.rawValue + " / " + rtkSettings.fixedBasePositionAltitude.rawValue
-                property string _basePositionDynamic:   QGroundControl.gpsRtk.currentLatitude.rawValue + " / " + QGroundControl.gpsRtk.currentLongitude.rawValue + " / " + QGroundControl.gpsRtk.currentAltitude.rawValue
-                property string _basePosition:          "Base position: " + _basePositionFixed //(rtkSettings.useFixedPosition ? _basePositionFixed : _basePositionDynamic)
-                property string _vehicleCoordinates:    "Coordinates: " + _activeVehicle.gps.getFact("lat").rawValue + " / " + _activeVehicle.gps.getFact("lon").rawValue + " / " + _activeVehicle.altitudeRelative.rawValue
-                function distanceToBase() {
-                    var bLat = rtkSettings.useFixedPosition ? rtkSettings.fixedBasePositionLatitude.rawValue : QGroundControl.gpsRtk.currentLatitude.rawValue;
-                    var bLon = rtkSettings.useFixedPosition ? rtkSettings.fixedBasePositionLongitude.rawValue : QGroundControl.gpsRtk.currentLongitude.rawValue;
-                    var bAlt = rtkSettings.useFixedPosition ? rtkSettings.fixedBasePositionAltitude.rawValue : QGroundControl.gpsRtk.currentAltitude.rawValue;
-                    var vLat = _activeVehicle.gps.getFact("lat").rawValue;
-                    var vLon = _activeVehicle.gps.getFact("lon").rawValue;
-                    var vAlt = _activeVehicle.altitudeRelative.rawValue;
-                    return (bLat - vLat) * (bLat - vLat) + (bLon - vLon) * (bLon - vLon) + (bAlt - vAlt) * (bAlt - vAlt);
-                }
-                property string _distanceToBase:        "Distance to base: " + distanceToBase()
-                text:               qsTr(_basePosition + "\n" + (_activeVehicle ? _vehicleCoordinates + "\n" + _distanceToBase : "No vehicle was found!"))
+                function basePosition() {
+                    var bLat = rtkSettings.fixedBasePositionLatitude.rawValue;
+                    //var bLat = rtkSettings.useFixedPosition ? rtkSettings.fixedBasePositionLatitude.rawValue : QGroundControl.gpsRtk.currentLatitude.rawValue;
+                    var bLon = rtkSettings.fixedBasePositionLongitude.rawValue;
+                    //var bLon = rtkSettings.useFixedPosition ? rtkSettings.fixedBasePositionLongitude.rawValue : QGroundControl.gpsRtk.currentLongitude.rawValue;
+                    var bAlt = rtkSettings.fixedBasePositionAltitude.rawValue;
+                    //var bAlt = rtkSettings.useFixedPosition ? rtkSettings.fixedBasePositionAltitude.rawValue : QGroundControl.gpsRtk.currentAltitude.rawValue;
 
+                    return "Base position: " + (bLat < 0 ? -bLat : bLat) + "\u00b0 " + (bLat < 0 ? 'S' : 'N') + ' ' + (bLon < 0 ? -bLon : bLon) + "\u00b0 " + (bLon < 0 ? 'W' : 'E')
+                            + "; alt. " + bAlt + ' ' + _activeVehicle.altitudeRelative.units;
+                }
+                function vehiclePosition() {
+                    var lat = _activeVehicle.gps.getFact("lat").rawValue;
+                    var lon = _activeVehicle.gps.getFact("lon").rawValue;
+
+                    return "Vehicle position: " + (lat < 0 ? -lat : lat) + "\u00b0 " + (lat < 0 ? 'S' : 'N') + ' ' + (lon < 0 ? -lon : lon) + "\u00b0 " + (lon < 0 ? 'W' : 'E')
+                            + "; alt. " + _activeVehicle.altitudeRelative.rawValue + ' ' + _activeVehicle.altitudeRelative.units;
+                }
+                function distanceToBase() {
+                    var bLat = rtkSettings.fixedBasePositionLatitude.rawValue;
+                    //var bLat = rtkSettings.useFixedPosition ? rtkSettings.fixedBasePositionLatitude.rawValue : QGroundControl.gpsRtk.currentLatitude.rawValue;
+                    var bLon = rtkSettings.fixedBasePositionLongitude.rawValue;
+                    //var bLon = rtkSettings.useFixedPosition ? rtkSettings.fixedBasePositionLongitude.rawValue : QGroundControl.gpsRtk.currentLongitude.rawValue;
+                    var bAlt = rtkSettings.fixedBasePositionAltitude.rawValue;
+                    //var bAlt = rtkSettings.useFixedPosition ? rtkSettings.fixedBasePositionAltitude.rawValue : QGroundControl.gpsRtk.currentAltitude.rawValue;
+
+                    const degToMeters = 6.371e6 * Math.PI / 180;
+                    var y = (bLat - _activeVehicle.gps.getFact("lat").rawValue) * degToMeters;
+                    var x = (bLon - _activeVehicle.gps.getFact("lon").rawValue) * Math.cos(bLat) * degToMeters;
+                    var z = bAlt - _activeVehicle.altitudeRelative.rawValue;
+
+                    return "Distance to base: " + Math.sqrt(x * x + y * y + z * z) + " m";
+                }
+
+                text:               qsTr(basePosition() + "\n" + (_activeVehicle ? vehiclePosition() + "\n" + distanceToBase() : "No vehicle was found!"))
                 standardButtons:    StandardButton.Ok
                 onAccepted:         messageHell.close()
             }
