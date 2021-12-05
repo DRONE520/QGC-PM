@@ -77,19 +77,6 @@ Rectangle {
             visible:                currentToolbar === flyViewToolbar
         }
 
-        QGCCheckBox {
-            id:                 mockLinkActive
-            text:               qsTr("MockLink PX4")
-            checked:            false
-            onClicked: {
-                if (mockLinkActive.checked) {
-                    QGroundControl.startPX4MockLink(true)
-                } else {
-                    QGroundControl.stopOneMockLink()
-                }
-            }
-        }
-
         QGCButton {
             id:                 disconnectButton
             text:               qsTr("Disconnect")
@@ -120,9 +107,28 @@ Rectangle {
         }
     }
 
+    QGCCheckBox {
+        id:                 mockLinkActive
+        anchors.right:      brandingLogo.left
+        anchors.top:        parent.top
+        anchors.bottom:     parent.bottom
+        anchors.margins:    ScreenTools.defaultFontPixelHeight * 0.66
+
+        text:               qsTr("MockLink PX4")
+        checked:            false
+        onClicked: {
+            if (mockLinkActive.checked) {
+                QGroundControl.startPX4MockLink(true)
+            } else {
+                QGroundControl.stopOneMockLink()
+            }
+        }
+    }
+
     //-------------------------------------------------------------------------
     //-- Branding Logo
     Image {
+        id:                     brandingLogo
         anchors.right:          parent.right
         anchors.top:            parent.top
         anchors.bottom:         parent.bottom

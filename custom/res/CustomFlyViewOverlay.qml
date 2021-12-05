@@ -86,17 +86,8 @@ Item {
                 title:              qsTr("Vehicle position")
 
                 property var rtkSettings:               QGroundControl.settingsManager.rtkSettings
-                function basePosition() {
-                    var bLat = rtkSettings.fixedBasePositionLatitude.rawValue;
-                    //var bLat = rtkSettings.useFixedPosition ? rtkSettings.fixedBasePositionLatitude.rawValue : QGroundControl.gpsRtk.currentLatitude.rawValue;
-                    var bLon = rtkSettings.fixedBasePositionLongitude.rawValue;
-                    //var bLon = rtkSettings.useFixedPosition ? rtkSettings.fixedBasePositionLongitude.rawValue : QGroundControl.gpsRtk.currentLongitude.rawValue;
-                    var bAlt = rtkSettings.fixedBasePositionAltitude.rawValue;
-                    //var bAlt = rtkSettings.useFixedPosition ? rtkSettings.fixedBasePositionAltitude.rawValue : QGroundControl.gpsRtk.currentAltitude.rawValue;
+                property bool useFixedPosition:         rtkSettings.useFixedBasePosition.rawValue
 
-                    return "Base position: " + (bLat < 0 ? -bLat : bLat) + "\u00b0 " + (bLat < 0 ? 'S' : 'N') + ' ' + (bLon < 0 ? -bLon : bLon) + "\u00b0 " + (bLon < 0 ? 'W' : 'E')
-                            + "; alt. " + bAlt + ' ' + _activeVehicle.altitudeRelative.units;
-                }
                 function vehiclePosition() {
                     var lat = _activeVehicle.gps.getFact("lat").rawValue;
                     var lon = _activeVehicle.gps.getFact("lon").rawValue;
@@ -104,14 +95,7 @@ Item {
                     return "Vehicle position: " + (lat < 0 ? -lat : lat) + "\u00b0 " + (lat < 0 ? 'S' : 'N') + ' ' + (lon < 0 ? -lon : lon) + "\u00b0 " + (lon < 0 ? 'W' : 'E')
                             + "; alt. " + _activeVehicle.altitudeRelative.rawValue + ' ' + _activeVehicle.altitudeRelative.units;
                 }
-                function distanceToBase() {
-                    var bLat = rtkSettings.fixedBasePositionLatitude.rawValue;
-                    //var bLat = rtkSettings.useFixedPosition ? rtkSettings.fixedBasePositionLatitude.rawValue : QGroundControl.gpsRtk.currentLatitude.rawValue;
-                    var bLon = rtkSettings.fixedBasePositionLongitude.rawValue;
-                    //var bLon = rtkSettings.useFixedPosition ? rtkSettings.fixedBasePositionLongitude.rawValue : QGroundControl.gpsRtk.currentLongitude.rawValue;
-                    var bAlt = rtkSettings.fixedBasePositionAltitude.rawValue;
-                    //var bAlt = rtkSettings.useFixedPosition ? rtkSettings.fixedBasePositionAltitude.rawValue : QGroundControl.gpsRtk.currentAltitude.rawValue;
-
+                function ditoBase(bLat, bLon, bAlt) {
                     const degToMeters = 6.371e6 * Math.PI / 180;
                     var y = (bLat - _activeVehicle.gps.getFact("lat").rawValue) * degToMeters;
                     var x = (bLon - _activeVehicle.gps.getFact("lon").rawValue) * Math.cos(bLat) * degToMeters;
@@ -119,8 +103,41 @@ Item {
 
                     return "Distance to base: " + Math.sqrt(x * x + y * y + z * z) + " m";
                 }
+                function hellString() {
+                    var basePosition = "";
+                    var distanceToBase = "Distance unavaliable";
+                    if (useFixedPosition) {
+                        var bLatF = rtkSettings.fixedBasePositionLatitude.rawValue;
+                        var bLonF = rtkSettings.fixedBasePositionLongitude.rawValue;
+                        var bAltF = rtkSettings.fixedBasePositionAltitude.rawValue;
 
-                text:               qsTr(basePosition() + "\n" + (_activeVehicle ? vehiclePosition() + "\n" + distanceToBase() : "No vehicle was found!"))
+                        basePosition = "Using fixed base position\nBase position: "
+                                + (bLatF < 0 ? -bLatF : bLatF) + "\u00b0 " + (bLatF < 0 ? 'S' : 'N') + ' '
+                                + (bLonF < 0 ? -bLonF : bLonF) + "\u00b0 " + (bLonF < 0 ? 'W' : 'E')
+                                + "; alt. " + bAltF + ' ' + _activeVehicle.altitudeRelative.units;
+
+                        distanceToBase = ditoBase(bLatF, bLonF, bAltF);
+                    }
+                    else if (!QGroundControl.gpsRtk.active.rawValue)    basePosition = "RTK GPS is inactive!";
+                    else if (!QGroundControl.gpsRtk.connected.rawValue) basePosition = "RTK GPS is disconnected!";
+                    else if (!QGroundControl.gpsRtk.valid.rawValue)     basePosition = "RTK GPS data is invalid!";
+                    else {
+                        var bLatD = QGroundControl.gpsRtk.currentLatitude.rawValue;
+                        var bLonD = QGroundControl.gpsRtk.currentLongitude.rawValue;
+                        var bAltD = QGroundControl.gpsRtk.currentAltitude.rawValue;
+
+                        basePosition = "Using GPS RTK survey\nBase position: "
+                                + (bLatD < 0 ? -bLatD : bLatD) + "\u00b0 " + (bLatD < 0 ? 'S' : 'N') + ' '
+                                + (bLonD < 0 ? -bLonD : bLonD) + "\u00b0 " + (bLonD < 0 ? 'W' : 'E')
+                                + "; alt. " + bAltD + ' ' + _activeVehicle.altitudeRelative.units;
+
+                        distanceToBase = ditoBase(bLatD, bLonD, bAltD);
+                    }
+
+                    return basePosition + "\n" + (_activeVehicle ? vehiclePosition() + "\n" + distanceToBase : "\nNo vehicle was found!");
+                }
+
+                text:               qsTr(hellString())
                 standardButtons:    StandardButton.Ok
                 onAccepted:         messageHell.close()
             }
